@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة حجز صالونات لومير (نظام الداردو الشامل)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0f172a',
+                        accent: '#38bdf8',
+                        salonPink: '#be185d',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-cairo bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-pink-600 selection:text-white">
+
+    <!-- 1. هيكل المشروع ونظام التنقل العلوي -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-600 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-pink-600/30">
+                    <i class="fa-solid fa-scissors text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-wide text-white" id="salonTitleHeader">صالون لومير - فرع الوداد</h1>
+                    <p class="text-xs text-slate-400">نظام حجز الصالونات الذكي (نظام الداردو)</p>
+                </div>
+            </div>
+            <!-- محول الفروع (Multi-Salon Switcher) -->
+            <div class="flex items-center gap-2 bg-slate-800/80 p-1.5 rounded-xl border border-slate-700">
+                <button onclick="switchSalon(0)" id="btnSalon0" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-pink-600 text-white shadow">فرع الوداد</button>
+                <button onclick="switchSalon(1)" id="btnSalon1" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">فرع النخيل</button>
+                <button onclick="switchSalon(2)" id="btnSalon2" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">فرع الياسمين</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. قسم التصميم البصري (Hero & Cinematic Video Background) -->
+    <section class="relative h-screen w-full flex items-center justify-center overflow-hidden pt-20">
+        <!-- فيديو الخلفية السينمائي عالي الجودة والأداء -->
+        <div class="absolute inset-0 z-0 overflow-hidden bg-slate-950">
+            <video autoplay loop muted playsinline preload="auto" id="heroVideo" class="w-full h-full object-cover scale-105 transition-transform duration-1000 will-change-transform">
+                <source src="video.mp4" type="video/mp4">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-barber-cutting-a-customer-s-hair-41617-large.mp4" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+            <!-- طبقة تظليل احترافية (Dark Gradient Overlay) لتوضيح النصوص -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/40 pointer-events-none"></div>
+        </div>
+
+        <!-- محتوى واجهة الهيرو -->
+        <div class="relative z-10 max-w-5xl mx-auto text-center px-4 space-y-6">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs font-bold backdrop-blur-md">
+                <i class="fa-solid fa-sparkles"></i> خدمة فاخرة ومواعيد فورية دقيقة
+            </span>
+            <h2 class="text-4xl sm:text-5xl font-black tracking-tight text-white drop-shadow-md" id="heroTitle">
+                أناقة الرجل العصري تبدأ من هنا
+            </h2>
+            <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto" id="heroDesc">
+                نخبة من أفضل الحلاقين والخبراء في أجواء فاخرة ومريحة بفرع الوداد.
+            </p>
+
+            <!-- قسم خدماتنا المميزة المضاف بناءً على الصورة المرفقة -->
+            <div class="mt-8 bg-slate-900/60 backdrop-blur-xl p-6 rounded-3xl border border-slate-800/80 shadow-2xl">
+                <h3 class="text-lg font-bold text-white mb-6 text-center">خدماتنا المميزة</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- البطاقة الأولى -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-pink-500/50 transition-all shadow-lg">
+                        <div class="overflow-hidden rounded-xl mb-4 h-40">
+                            <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=500&auto=format&fit=crop&q=60" alt="قصة شعر كلاسيكية" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm text-white mb-1">قصة شعر كلاسيكية</h4>
+                            <p class="text-xs font-bold text-slate-300 mb-4">120 ريال سعودي</p>
+                        </div>
+                        <button onclick="openBookingModal()" class="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs shadow-md shadow-pink-600/30 transition-all">
+                            حجز
+                        </button>
+                    </div>
+
+                    <!-- البطاقة الثانية -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-pink-500/50 transition-all shadow-lg">
+                        <div class="overflow-hidden rounded-xl mb-4 h-40">
+                            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=500&auto=format&fit=crop&q=60" alt="قصة شعر عصرية متدرجة" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm text-white mb-1">قصة شعر عصرية متدرجة</h4>
+                            <p class="text-xs font-bold text-slate-300 mb-4">150 ريال سعودي</p>
+                        </div>
+                        <button onclick="openBookingModal()" class="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs shadow-md shadow-pink-600/30 transition-all">
+                            حجز
+                        </button>
+                    </div>
+
+                    <!-- البطاقة الثالثة -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-pink-500/50 transition-all shadow-lg">
+                        <div class="overflow-hidden rounded-xl mb-4 h-40">
+                            <img src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=500&auto=format&fit=crop&q=60" alt="تسريحة شعر أطول عصرية" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm text-white mb-1">تسريحة شعر أطول عصرية</h4>
+                            <p class="text-xs font-bold text-slate-300 mb-4">180 ريال سعودي</p>
+                        </div>
+                        <button onclick="openBookingModal()" class="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs shadow-md shadow-pink-600/30 transition-all">
+                            حجز
+                        </button>
+                    </div>
+
+                    <!-- البطاقة الرابعة: عنصر QR Code المخصص مع تدرج لوني وردي وأصفر وشعار واتساب -->
+                    <div class="bg-slate-900/90 rounded-2xl p-4 flex flex-col items-center justify-between shadow-2xl relative overflow-hidden border-2 border-transparent bg-origin-border" style="border-image: linear-gradient(to bottom right, #db2777, #f59e0b) 1;">
+                        <p class="text-xs font-bold text-white text-center mb-3">امسح الرمز للتواصل السريع عبر واتساب</p>
+                        <a href="https://wa.me/966500000000" target="_blank" class="relative w-36 h-36 bg-slate-950 p-2 rounded-xl flex items-center justify-center border border-slate-800 shadow-inner group cursor-pointer">
+                            <!-- محاكاة نمط QR Code احترافي مع شعار واتساب في المنتصف -->
+                            <div class="w-full h-full bg-slate-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+                                <!-- شبكة QR Code وهمية متناسقة -->
+                                <div class="absolute inset-2 grid grid-cols-6 gap-1 opacity-70">
+                                    <div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div>
+                                    <div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div>
+                                    <div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div>
+                                    <div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div>
+                                    <div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div>
+                                    <div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-white rounded-xs"></div><div class="bg-slate-800"></div><div class="bg-white rounded-xs"></div><div class="bg-white rounded-xs"></div>
+                                </div>
+                                <!-- شعار واتساب في المنتصف -->
+                                <div class="absolute z-10 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                                </div>
+                            </div>
+                        </a>
+                        <span class="text-[10px] text-slate-400 mt-2">انقر للمراسلة الفورية</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. قائمة الخدمات والحجز (Services & Booking Calculator) -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full" id="servicesSection">
+        <div class="text-center mb-12">
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">قائمة الخدمات والأسعار</h3>
+            <p class="text-slate-400 text-sm">اختر الخدمات المناسبة لك وسيتولاّبي النظام حساب المجموع والمدة الزمنية بدقة</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- عمود الخدمات (2 عمود) -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4" id="servicesContainer">
+                <!-- يتم حقن الخدمات ديناميكياً عبر JavaScript -->
+            </div>
+
+            <!-- عمود ملخص الحسبة والفاتورة (عربة الحجز المصغرة) -->
+            <div class="bg-slate-900/90 backdrop-blur-xl p-6 rounded-2xl border border-slate-800 flex flex-col justify-between h-fit sticky top-28 shadow-2xl">
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-receipt text-pink-500"></i> ملخص الحجز الحالي
+                    </h4>
+                    <div id="selectedServicesList" class="space-y-3 mb-6 max-h-60 overflow-y-auto pr-1">
+                        <p class="text-slate-500 text-xs italic">لم تقترن أي خدمة بعد. اختر من القائمة.</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 space-y-4">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">إجمالي المدة التقديرية:</span>
+                        <span class="font-bold text-white" id="totalDuration">0 دقيقة</span>
+                    </div>
+                    <div class="flex justify-between items-center text-base">
+                        <span class="text-slate-300 font-bold">المبلغ الإجمالي:</span>
+                        <span class="text-2xl font-black text-emerald-400" id="totalPrice">0 ر.س</span>
+                    </div>
+                    <button onclick="openBookingModal()" id="checkoutBtn" disabled class="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-extrabold text-sm transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-circle"></i> تأكيد الحجز وإتمام الدفع
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- نافذة تأكيد الحجز وتحديد الموعد والدفع (Booking Modal) -->
+    <div id="bookingModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onclick="closeBookingModal()" class="absolute top-5 left-5 text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-xl font-extrabold text-white mb-2">تأكيد الموعد وبيانات العميل</h3>
+            <p class="text-slate-400 text-xs mb-6">أدخل بياناتك لتثبيت الموعد في فرع <span id="modalSalonName" class="text-pink-400 font-bold"></span></p>
+
+            <form id="bookingForm" onsubmit="submitBooking(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">الاسم الكامل</label>
+                    <input type="text" id="clientName" required placeholder="أدخل اسمك الكريم" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">رقم الجوال</label>
+                    <input type="tel" id="clientPhone" required placeholder="05xxxxxxxx" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">تاريخ الحجز</label>
+                        <input type="date" id="clientDate" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-pink-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">الوقت المناسب</label>
+                        <select id="clientTime" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-pink-500 transition-colors">
+                            <option value="02:00 م">02:00 ظهراً</option>
+                            <option value="04:00 م">04:00 عصراً</option>
+                            <option value="06:00 م">06:00 مساءً</option>
+                            <option value="08:00 م">08:00 مساءً</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">طريقة الدفع</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex items-center gap-2 bg-slate-800 border border-slate-700 p-3 rounded-xl cursor-pointer hover:border-pink-500 transition-colors">
+                            <input type="radio" name="paymentMethod" value="مدى / أونلاين" checked class="accent-pink-600">
+                            <span class="text-xs font-bold text-white">مدى / بطاقة بنكية</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-slate-800 border border-slate-700 p-3 rounded-xl cursor-pointer hover:border-pink-500 transition-colors">
+                            <input type="radio" name="paymentMethod" value="الدفع نقداً بالصالون" class="accent-pink-600">
+                            <span class="text-xs font-bold text-white">الدفع نقداً</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 text-white font-extrabold text-sm shadow-xl shadow-pink-600/30 hover:opacity-90 transition-all mt-4">
+                    إتمام الحجز وتأكيد الموعد
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. الشات المباشر (Live Chat Component) أسفل الشاشة -->
+    <div class="fixed bottom-5 left-5 z-40">
+        <!-- زر فتح وغلق الشات -->
+        <button onclick="toggleChat()" id="chatToggleBtn" class="w-14 h-14 rounded-full bg-gradient-to-tr from-pink-600 to-rose-500 text-white shadow-2xl shadow-pink-600/50 flex items-center justify-center text-xl hover:scale-105 transition-all">
+            <i class="fa-regular fa-comments"></i>
+        </button>
+
+        <!-- نافذة الشات المنسدلة -->
+        <div id="chatWindow" class="hidden absolute bottom-20 left-0 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[420px] animate-in fade-in slide-in-from-bottom-5 duration-200">
+            <div class="bg-slate-800 p-4 border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <div>
+                        <h4 class="font-bold text-sm text-white" id="chatSalonTitle">دعم صالون لومير</h4>
+                        <p class="text-[10px] text-slate-400">متواجدون للرد على استفساراتكم فوراً</p>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <!-- رسائل الشات -->
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950/50 text-xs">
+                <div class="bg-slate-800 text-slate-200 p-3 rounded-2xl rounded-tr-none max-w-[80%]">
+                    أهلاً بك! كيف يمكننا مساعدتك في حجز موعدك اليوم؟
+                </div>
+            </div>
+            <!-- صندوق كتابة الرسالة -->
+            <div class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
+                <input type="text" id="chatInput" onkeypress="handleChatKey(event)" placeholder="اكتب رسالتك هنا..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
+                <button onclick="sendChatMessage()" class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-xl text-xs font-bold transition-colors">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- تذييل الصفحة (Footer) -->
+    <footer class="relative z-10 bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
+        <p>جميع الحقوق محفوظة © 2026 - منصة حجز صالونات لومير (نظام الداردو الشامل)</p>
+    </footer>
+
+    <!-- 5. مراجعة وتكميل الكود وبرمجة التفاعل (JavaScript Logic) -->
+    <script>
+        // بيانات الصالونات المتعددة (Multi-Salon Data)
+        const salonsData = [
+            {
+                name: "فرع الوداد (الرئيسي)",
+                video: "video.mp4",
+                title: "أناقة الرجل العصري تبدأ من هنا",
+                desc: "نخبة من أفضل الحلاقين والخبراء في أجواء فاخرة ومريحة بفرع الوداد.",
+                services: [
+                    { id: 1, name: "حلاقة شعر احترافية", duration: "30 دقيقة", price: 80 },
+                    { id: 2, name: "حلاقة ذقن وتحديد بالحرارة", duration: "20 دقيقة", price: 50 },
+                    { id: 3, name: "باقة لومير الكاملة (شعر + ذقن)", duration: "50 دقيقة", price: 120 },
+                    { id: 4, name: "تنظيف بشرة عميق VIP", duration: "45 دقيقة", price: 150 },
+                    { id: 5, name: "حمام مغربي استرخائي", duration: "60 دقيقة", price: 200 }
+                ]
+            },
+            {
+                name: "فرع النخيل",
+                video: "video.mp4",
+                title: "تميز وإبداع في العناية الشخصية",
+                desc: "تجربة استثنائية تجمع بين الأصالة والتقنيات الحديثة للعناية بالمظهر.",
+                services: [
+                    { id: 1, name: "حلاقة شعر كلاسيكية", duration: "30 دقيقة", price: 75 },
+                    { id: 2, name: "حلاقة ذقن ملكية", duration: "25 دقيقة", price: 55 },
+                    { id: 3, name: "باقة النخيل الملكية", duration: "60 دقيقة", price: 140 },
+                    { id: 4, name: "ماسكات الوجه والنضارة", duration: "30 دقيقة", price: 100 }
+                ]
+            },
+            {
+                name: "فرع الياسمين",
+                video: "video.mp4",
+                title: "الرفاهية المطلقة والخدمة الفاخرة",
+                desc: "اكتشف معايير جديدة للراحة والوسامة في فرع الياسمين الراقي.",
+                services: [
+                    { id: 1, name: "قص وتصفيف شعر عصري", duration: "35 دقيقة", price: 90 },
+                    { id: 2, name: "عناية باللحية مع حمام بخار", duration: "30 دقيقة", price: 70 },
+                    { id: 3, name: "الباقة الشاملة العائلية", duration: "75 دقيقة", price: 220 },
+                    { id: 4, name: "مساج فروة الرأس والاسترخاء", duration: "25 دقيقة", price: 80 }
+                ]
+            }
+        ];
+
+        let currentSalonIndex = 0;
+        let selectedServices = [];
+
+        // تبديل الصالون وتغيير الفيديو والبيانات تلقائياً
+        function switchSalon(index) {
+            currentSalonIndex = index;
+            selectedServices = []; // إعادة تعيين الخدمات المختارة عند تغيير الفرع
+            updateUI();
+        }
+
+        function updateUI() {
+            const salon = salonsData[currentSalonIndex];
+
+            // تحديث الأزرار في الهيدر
+            for (let i = 0; i < salonsData.length; i++) {
+                const btn = document.getElementById(`btnSalon${i}`);
+                if (i === currentSalonIndex) {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all bg-pink-600 text-white shadow";
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
+                }
+            }
+
+            // تحديث عناوين الهيدر والهيرو
+            document.getElementById('salonTitleHeader').innerText = `صالون لومير - ${salon.name}`;
+            document.getElementById('heroTitle').innerText = salon.title;
+            document.getElementById('heroDesc').innerText = salon.desc;
+            document.getElementById('chatSalonTitle').innerText = `دعم صالون لومير (${salon.name})`;
+            document.getElementById('modalSalonName').innerText = salon.name;
+
+            // تحديث فيديو الخلفية
+            const videoElement = document.getElementById('heroVideo');
+            videoElement.src = salon.video;
+            videoElement.load();
+
+            // عرض قائمة الخدمات
+            renderServices();
+            updateCartSummary();
+        }
+
+        // عرض قائمة الخدمات ديناميكياً
+        function renderServices() {
+            const salon = salonsData[currentSalonIndex];
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = '';
+
+            salon.services.forEach(service => {
+                const isSelected = selectedServices.some(s => s.id === service.id);
+                const card = document.createElement('div');
+                card.className = `bg-slate-900/80 backdrop-blur-md p-5 rounded-2xl border transition-all flex flex-col justify-between ${isSelected ? 'border-pink-500 ring-1 ring-pink-500 bg-slate-900' : 'border-slate-800 hover:border-slate-700'}`;
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h5 class="font-extrabold text-sm text-white">${service.name}</h5>
+                            <span class="text-xs font-bold text-pink-400 bg-pink-500/10 px-2.5 py-1 rounded-full">${service.price} ر.س</span>
+                        </div>
+                        <p class="text-xs text-slate-400 flex items-center gap-1.5 mb-4">
+                            <i class="fa-regular fa-clock"></i> المدة التقديرية: ${service.duration}
+                        </p>
+                    </div>
+                    <button onclick="toggleService(${service.id})" class="w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${isSelected ? 'bg-pink-600 text-white shadow-md shadow-pink-600/30' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}">
+                        ${isSelected ? '<i class="fa-solid fa-check"></i> تم الاختيار' : '<i class="fa-solid fa-plus"></i> اختيار سريع'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // اختيار أو إلغاء اختيار خدمة
+        function toggleService(serviceId) {
+            const salon = salonsData[currentSalonIndex];
+            const service = salon.services.find(s => s.id === serviceId);
+            const index = selectedServices.findIndex(s => s.id === serviceId);
+
+            if (index > -1) {
+                selectedServices.splice(index, 1);
+            } else {
+                selectedServices.push(service);
+            }
+
+            renderServices();
+            updateCartSummary();
+        }
+
+        // تحديث ملخص الحسبة والفاتورة
+        function updateCartSummary() {
+            const listContainer = document.getElementById('selectedServicesList');
+            const totalDurationEl = document.getElementById('totalDuration');
+            const totalPriceEl = document.getElementById('totalPrice');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            if (selectedServices.length === 0) {
+                listContainer.innerHTML = '<p class="text-slate-500 text-xs italic">لم تقترن أي خدمة بعد. اختر من القائمة.</p>';
+                totalDurationEl.innerText = '0 دقيقة';
+                totalPriceEl.innerText = '0 ر.س';
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            let html = '';
+            let totalPrice = 0;
+            let totalMinutes = 0;
+
+            selectedServices.forEach(s => {
+                totalPrice += s.price;
+                const mins = parseInt(s.duration);
+                if (!isNaN(mins)) totalMinutes += mins;
+
+                html += `
+                    <div class="flex justify-between items-center bg-slate-800/60 p-2.5 rounded-xl text-xs">
+                        <span class="text-slate-200 font-bold">${s.name}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-emerald-400 font-extrabold">${s.price} ر.س</span>
+                            <button onclick="toggleService(${s.id})" class="text-slate-400 hover:text-red-400"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+            totalDurationEl.innerText = `${totalMinutes} دقيقة تقريباً`;
+            totalPriceEl.innerText = `${totalPrice} ر.س`;
+            checkoutBtn.disabled = false;
+        }
+
+        // نافذة تأكيد الحجز (Modal)
+        function openBookingModal() {
+            document.getElementById('bookingModal').style.display = 'flex';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        function submitBooking(event) {
+            event.preventDefault();
+            const name = document.getElementById('clientName').value;
+            const phone = document.getElementById('clientPhone').value;
+            const date = document.getElementById('clientDate').value;
+            const time = document.getElementById('clientTime').value;
+            const payment = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const salon = salonsData[currentSalonIndex];
+
+            alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالموعد: ${date} الساعة ${time}\nطريقة الدفع: ${payment}`);
+            
+            closeBookingModal();
+            selectedServices = [];
+            renderServices();
+            updateCartSummary();
+            document.getElementById('bookingForm').reset();
+        }
+
+        // الشات المباشر (Live Chat)
+        function toggleChat() {
+            const win = document.getElementById('chatWindow');
+            win.classList.toggle('hidden');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const messagesBox = document.getElementById('chatMessages');
+
+            // رسالة العميل (مرسلة)
+            const userMsg = document.createElement('div');
+            userMsg.className = 'bg-pink-600 text-white p-3 rounded-2xl rounded-tl-none max-w-[80%] ml-auto text-right';
+            userMsg.innerText = text;
+            messagesBox.appendChild(userMsg);
+            input.value = '';
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+
+            // رد تلقائي ذكي من الصالون بعد ثانية
+            setTimeout(() => {
+                const salonMsg = document.createElement('div');
+                salonMsg.className = 'bg-slate-800 text-slate-200 p-3 rounded-2xl rounded-tr-none max-w-[80%]';
+                salonMsg.innerText = "أهلاً بك! تم استلام رسالتك، سيتواصل معك موظف الاستقبال فوراً لتأكيد كافة التفاصيل.";
+                messagesBox.appendChild(salonMsg);
+                messagesBox.scrollTop = messagesBox.scrollHeight;
+            }, 1000);
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        // تعيين تاريخ اليوم كحد أدنى لحجز الموعد تلقائياً
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('clientDate');
+            if (dateInput) dateInput.value = today;
+            updateUI();
+        });
+    </script>
+</body>
+</html>
