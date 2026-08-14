@@ -531,7 +531,38 @@
             const dateInput = document.getElementById('clientDate');
             if (dateInput) dateInput.value = today;
             updateUI();
-        });
-    </script>
+updateUI();
+    });
+
+    // دالة إرسال الحجز إلى n8n
+    async function submitBooking(event) {
+        if (event) event.preventDefault();
+
+        // جلب البيانات من الخانات
+        const bookingData = {
+            name: document.getElementById('clientName')?.value || document.querySelector('input[type="text"]')?.value || '',
+            phone: document.getElementById('clientPhone')?.value || document.querySelector('input[type="tel"]')?.value || '',
+            service: document.getElementById('serviceSelect')?.value || document.getElementById('clientService')?.value || 'حلاقة وقص',
+            date: document.getElementById('clientDate')?.value || ''
+        };
+
+        try {
+            const response = await fetch('http://localhost:5678/webhook/salon-booking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bookingData)
+            });
+
+            if (response.ok) {
+                alert('تم تأكيد حجزك بنجاح وتسجيله في النظام!');
+            }
+        } catch (error) {
+            console.error('Error submitting booking:', error);
+        }
+    }
+</script>
 </body>
 </html>
+
