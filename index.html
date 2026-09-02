@@ -648,7 +648,7 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        function submitBooking(event) {
+        async function submitBooking(event) {
             event.preventDefault();
             const name = document.getElementById('clientName').value;
             const phone = document.getElementById('clientPhone').value;
@@ -657,6 +657,29 @@
             const payment = document.querySelector('input[name="paymentMethod"]:checked').value;
             const salon = salonsData[currentSalonIndex];
             const bookingDetails = getBookingData();
+
+            const payload = {
+                clientName: name,
+                clientPhone: phone,
+                salonBranch: salon.name,
+                barber: bookingDetails.barber,
+                services: bookingDetails.service,
+                totalPrice: bookingDetails.totalPrice,
+                date: date,
+                time: time,
+                paymentMethod: payment,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await fetch('http://localhost:5678/webhook/salon-booking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.log("Webhook payload sent");
+            }
 
             alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingDetails.barber}\nالخدمات: ${bookingDetails.service}\nالإجمالي: ${bookingDetails.totalPrice}\nالموعد: ${date} الساعة ${time}\nطريقة الدفع: ${payment}`);
             
