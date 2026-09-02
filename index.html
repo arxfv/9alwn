@@ -35,6 +35,85 @@
             }
         }
     </script>
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #f8fafc;
+            font-size: 13px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background-color: #1a1a1a;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .service-item:hover {
+            border-color: #d4af37;
+        }
+
+        .service-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #d4af37;
+            cursor: pointer;
+        }
+
+        .service-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-title {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .service-price {
+            color: #d4af37;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .price-box {
+            background: #111;
+            border: 1px dashed #d4af37;
+            padding: 14px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            margin: 20px 0;
+        }
+
+        .total-amount {
+            color: #d4af37;
+            font-size: 24px;
+        }
+    </style>
 </head>
 <body class="font-cairo bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-pink-600 selection:text-white">
 
@@ -217,6 +296,65 @@
                     <label class="block text-xs font-bold text-slate-300 mb-1.5">رقم الجوال</label>
                     <input type="tel" id="clientPhone" required placeholder="05xxxxxxxx" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
                 </div>
+
+                <!-- اختيار الحلاق المفضل -->
+                <div>
+                    <label for="barber" class="block text-xs font-bold text-slate-300 mb-1.5">اختر الحلاق:</label>
+                    <select id="barber" name="barber" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
+                        <option value="أي حلاق متاح">أي حلاق متاح (الأسرع)</option>
+                        <option value="أحمد (خبير قص وتصفيف)">أحمد (خبير قص وتصفيف)</option>
+                        <option value="سلطان (أخصائي لحية وتحديد)">سلطان (أخصائي لحية وتحديد)</option>
+                        <option value="يوسف (شامل وعناية بشرة)">يوسف (شامل وعناية بشرة)</option>
+                    </select>
+                </div>
+
+                <!-- اختيار الخدمات المتعددة -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-2">اختر الخدمات المطلوبة:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center justify-between bg-slate-800 border border-slate-700 p-2.5 rounded-xl cursor-pointer hover:border-pink-500 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="service" value="قص شعر" data-price="50" onchange="calculateModalTotal()" class="accent-pink-600">
+                                <span class="text-xs font-bold text-white">قص شعر</span>
+                            </div>
+                            <span class="text-xs text-pink-400 font-bold">50 ر.س</span>
+                        </label>
+
+                        <label class="flex items-center justify-between bg-slate-800 border border-slate-700 p-2.5 rounded-xl cursor-pointer hover:border-pink-500 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="service" value="تحديد وحلاقة دقن" data-price="35" onchange="calculateModalTotal()" class="accent-pink-600">
+                                <span class="text-xs font-bold text-white">تحديد دقن</span>
+                            </div>
+                            <span class="text-xs text-pink-400 font-bold">35 ر.س</span>
+                        </label>
+
+                        <label class="flex items-center justify-between bg-slate-800 border border-slate-700 p-2.5 rounded-xl cursor-pointer hover:border-pink-500 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="service" value="تنظيف بشرة وماسك" data-price="60" onchange="calculateModalTotal()" class="accent-pink-600">
+                                <span class="text-xs font-bold text-white">تنظيف بشرة</span>
+                            </div>
+                            <span class="text-xs text-pink-400 font-bold">60 ر.س</span>
+                        </label>
+
+                        <label class="flex items-center justify-between bg-slate-800 border border-slate-700 p-2.5 rounded-xl cursor-pointer hover:border-pink-500 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" name="service" value="صبغة ولحية كاملة" data-price="75" onchange="calculateModalTotal()" class="accent-pink-600">
+                                <span class="text-xs font-bold text-white">صبغة ولحية</span>
+                            </div>
+                            <span class="text-xs text-pink-400 font-bold">75 ر.س</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- حاسبة السعر المباشر -->
+                <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center">
+                    <span class="text-xs text-slate-400">الإجمالي المتوقع:</span>
+                    <div>
+                        <span id="total-price" class="text-lg font-black text-emerald-400">0</span>
+                        <span class="text-xs text-slate-400 mr-1">ر.س</span>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1.5">تاريخ الحجز</label>
@@ -463,6 +601,44 @@
             checkoutBtn.disabled = false;
         }
 
+        // تحديث السعر المباشر عند تحديد أو إلغاء أي خدمة
+        function calculateModalTotal() {  
+            let total = 0;
+            // جلب كافة مربعات الاختيار المحددة
+            const checkedBoxes = document.querySelectorAll('input[name="service"]:checked, input[type="checkbox"]:checked');
+            
+            checkedBoxes.forEach(box => {
+                // قراءة السعر من data-price أو القيمة الرقمية
+                const price = parseFloat(box.getAttribute('data-price')) || 0;
+                total += price;
+            });
+
+            // تحديث عنصر عرض الإجمالي
+            const display = document.getElementById('total-price') || document.querySelector('.total-amount');
+            if (display) {
+                display.textContent = total;
+            }
+        }
+
+        // تجهيز البيانات لإرسالها للـ Webhook داخل دالة الإرسال (Submit)
+        function getBookingData() {
+            const selectedBarber = document.getElementById('barber').value;
+            
+            // تجميع كافة الخدمات المختارة في نص واحد مفصول بفواصل
+            const selectedServices = Array.from(document.querySelectorAll('input[name="service"]:checked'))
+                .map(cb => cb.value)
+                .join(' + ');
+
+            const totalDisplay = document.getElementById('total-price');
+            const calculatedTotal = totalDisplay ? totalDisplay.textContent : "0";
+
+            return {
+                barber: selectedBarber,
+                service: selectedServices || "لم يتم تحديد خدمة",
+                totalPrice: calculatedTotal + " ر.س"
+            };
+        }
+
         // نافذة تأكيد الحجز (Modal)
         function openBookingModal() {
             document.getElementById('bookingModal').style.display = 'flex';
@@ -480,14 +656,17 @@
             const time = document.getElementById('clientTime').value;
             const payment = document.querySelector('input[name="paymentMethod"]:checked').value;
             const salon = salonsData[currentSalonIndex];
+            const bookingDetails = getBookingData();
 
-            alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالموعد: ${date} الساعة ${time}\nطريقة الدفع: ${payment}`);
+            alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingDetails.barber}\nالخدمات: ${bookingDetails.service}\nالإجمالي: ${bookingDetails.totalPrice}\nالموعد: ${date} الساعة ${time}\nطريقة الدفع: ${payment}`);
             
             closeBookingModal();
             selectedServices = [];
             renderServices();
             updateCartSummary();
             document.getElementById('bookingForm').reset();
+            const totalDisplay = document.getElementById('total-price');
+            if (totalDisplay) totalDisplay.textContent = '0';
         }
 
         // الشات المباشر (Live Chat)
@@ -531,38 +710,7 @@
             const dateInput = document.getElementById('clientDate');
             if (dateInput) dateInput.value = today;
             updateUI();
-updateUI();
-    });
-
-    // دالة إرسال الحجز إلى n8n
-    async function submitBooking(event) {
-        if (event) event.preventDefault();
-
-        // جلب البيانات من الخانات
-        const bookingData = {
-            name: document.getElementById('clientName')?.value || document.querySelector('input[type="text"]')?.value || '',
-            phone: document.getElementById('clientPhone')?.value || document.querySelector('input[type="tel"]')?.value || '',
-            service: document.getElementById('serviceSelect')?.value || document.getElementById('clientService')?.value || 'حلاقة وقص',
-            date: document.getElementById('clientDate')?.value || ''
-        };
-
-        try {
-            const response = await fetch('http://localhost:5678/webhook/salon-booking', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(bookingData)
-            });
-
-            if (response.ok) {
-                alert('تم تأكيد حجزك بنجاح وتسجيله في النظام!');
-            }
-        } catch (error) {
-            console.error('Error submitting booking:', error);
-        }
-    }
-</script>
+        });
+    </script>
 </body>
 </html>
-
