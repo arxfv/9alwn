@@ -654,42 +654,44 @@
             const phone = document.getElementById('clientPhone').value;
             const date = document.getElementById('clientDate').value;
             const time = document.getElementById('clientTime').value;
-            const payment = document.querySelector('input[name="paymentMethod"]:checked').value;
-            const salon = salonsData[currentSalonIndex];
             const bookingDetails = getBookingData();
+            const salon = salonsData[currentSalonIndex];
 
             const payload = {
-                clientName: name,
-                clientPhone: phone,
-                salonBranch: salon.name,
+                name: name,
+                phone: phone,
+                date: `${date} ${time}`,
+                service: bookingDetails.service,
                 barber: bookingDetails.barber,
-                services: bookingDetails.service,
                 totalPrice: bookingDetails.totalPrice,
-                date: date,
-                time: time,
-                paymentMethod: payment,
-                createdAt: new Date().toISOString()
+                salonBranch: salon.name
             };
 
             try {
-                await fetch('http://localhost:5678/webhook/salon-booking', {
+                const response = await fetch('http://localhost:5678/webhook/salon-booking', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-            } catch (err) {
-                console.log("Webhook payload sent");
-            }
 
-            alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingDetails.barber}\nالخدمات: ${bookingDetails.service}\nالإجمالي: ${bookingDetails.totalPrice}\nالموعد: ${date} الساعة ${time}\nطريقة الدفع: ${payment}`);
-            
-            closeBookingModal();
-            selectedServices = [];
-            renderServices();
-            updateCartSummary();
-            document.getElementById('bookingForm').reset();
-            const totalDisplay = document.getElementById('total-price');
-            if (totalDisplay) totalDisplay.textContent = '0';
+                if (!response.ok) {
+                    throw new Error('فشل استجابة السيرفر');
+                }
+
+                alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingDetails.barber}\nالخدمات: ${bookingDetails.service}\nالإجمالي: ${bookingDetails.totalPrice}\nالموعد: ${date} الساعة ${time}`);
+                
+                closeBookingModal();
+                selectedServices = [];
+                renderServices();
+                updateCartSummary();
+                document.getElementById('bookingForm').reset();
+                const totalDisplay = document.getElementById('total-price');
+                if (totalDisplay) totalDisplay.textContent = '0';
+
+            } catch (err) {
+                alert("حدث خطأ أثناء إرسال الحجز، يرجى المحاولة مرة أخرى أو التواصل عبر الواتساب.");
+                console.error(err);
+            }
         }
 
         // الشات المباشر (Live Chat)
