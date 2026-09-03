@@ -287,7 +287,7 @@
             <h3 class="text-xl font-extrabold text-white mb-2">تأكيد الموعد وبيانات العميل</h3>
             <p class="text-slate-400 text-xs mb-6">أدخل بياناتك لتثبيت الموعد في فرع <span id="modalSalonName" class="text-pink-400 font-bold"></span></p>
 
-            <form id="bookingForm" onsubmit="submitBooking(event)" class="space-y-4">
+            <form id="bookingForm" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1.5">الاسم الكامل</label>
                     <input type="text" id="name" required placeholder="أدخل اسمك الكريم" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
@@ -648,67 +648,68 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        const WEBHOOK_URL = 'https://895cce7192dc1f.lhr.life/webhook/salon-booking';
+        // الرابط المباشر للـ Webhook
+        const WEBHOOK_URL = 'https://e217b15cacdfd.lhr.life/webhook/salon-booking';
 
-        async function submitBooking(event) {  
-            if (event) event.preventDefault();
+        document.addEventListener('DOMContentLoaded', function() {
+          const bookingForm = document.querySelector('form');
+          if (!bookingForm) return;
 
-            const submitBtn = document.querySelector('button[type="submit"]') || document.getElementById('submitBtn');
-            const originalText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
-            const time = document.getElementById('clientTime')?.value || '';
+          bookingForm.onsubmit = async function(e) {
+            e.preventDefault();
 
-            // جمع كافة بيانات الحجز من حقول النموذج
+            const submitBtn = bookingForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
+
+            // جمع بيانات العميل والحجز
             const payload = {
-                name: document.getElementById('name')?.value || '',
-                phone: document.getElementById('phone')?.value || '',
-                barber: document.getElementById('barber')?.value || '',
-                service: Array.from(document.querySelectorAll('input[name="service"]:checked, input[type="checkbox"]:checked')).map(cb => cb.value).join(' + '),
-                date: (document.getElementById('date')?.value || '') + (time ? ` (${time})` : ''),
-                totalPrice: (document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0') + ' ر.س',
-                salonBranch: typeof salonsData !== 'undefined' ? salonsData[currentSalonIndex].name : ''
+              name: document.getElementById('name')?.value || '',
+              phone: document.getElementById('phone')?.value || '',
+              barber: document.getElementById('barber')?.value || '',
+              service: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value).join(' + '),
+              date: document.getElementById('date')?.value || '',
+              totalPrice: document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0'
             };
 
             if (!payload.name || !payload.phone) {
-                alert('يرجى ملء جميع الحقول المطلوبة');
-                return;
+              alert('يرجى إدخال الاسم ورقم الجوال');
+              return;
             }
 
             if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerText = 'جاري تأكيد الحجز...';
+              submitBtn.disabled = true;
+              submitBtn.innerText = 'جاري إرسال الحجز...';
             }
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
 
             try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
+              const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+              });
 
-                if (response.ok) {
-                    alert('تم تأكيد حجزك بنجاح وسنتواصل معك قريباً');
-                    document.querySelector('form')?.reset();
-                    if (typeof closeBookingModal === 'function') closeBookingModal();
-                    const totalDisplay = document.getElementById('total-price');
-                    if (totalDisplay) totalDisplay.textContent = '0';
-                } else {
-                    throw new Error('فشل استجابة السيرفر');
-                }
-            } catch (err) {
-                console.error('Booking Error:', err);
-                alert('حدث ضغط على النظام أثناء إرسال الحجز، يرجى التواصل عبر الواتساب لتأكيد الموعد.');
+              if (response.ok) {
+                alert('تم تأكيد حجزك بنجاح! ستصلك رسالة تأكيد قريباً.');
+                bookingForm.reset();
+                if (typeof closeBookingModal === 'function') closeBookingModal();
+                const totalDisplay = document.getElementById('total-price');
+                if (totalDisplay) totalDisplay.textContent = '0';
+              } else {
+                throw new Error('Server responded with error');
+              }
+            } catch (error) {
+              console.error('Booking submission error:', error);
+              alert('حدث خطأ أثناء إرسال الحجز، يرجى التواصل معنا عبر الواتساب لتأكيد موعدك.');
             } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = originalText;
-                }
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalBtnText;
+              }
             }
-        }
+          };
+        });
 
         // الشات المباشر (Live Chat)
         function toggleChat() {
