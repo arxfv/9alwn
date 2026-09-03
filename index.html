@@ -290,11 +290,11 @@
             <form id="bookingForm" onsubmit="submitBooking(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1.5">الاسم الكامل</label>
-                    <input type="text" id="clientName" required placeholder="أدخل اسمك الكريم" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
+                    <input type="text" id="name" required placeholder="أدخل اسمك الكريم" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-300 mb-1.5">رقم الجوال</label>
-                    <input type="tel" id="clientPhone" required placeholder="05xxxxxxxx" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
+                    <input type="tel" id="phone" required placeholder="05xxxxxxxx" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors">
                 </div>
 
                 <!-- اختيار الحلاق المفضل -->
@@ -350,7 +350,7 @@
                 <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center">
                     <span class="text-xs text-slate-400">الإجمالي المتوقع:</span>
                     <div>
-                        <span id="total-price" class="text-lg font-black text-emerald-400">0</span>
+                        <span id="total-price" class="text-lg font-black text-emerald-400 total-amount">0</span>
                         <span class="text-xs text-slate-400 mr-1">ر.س</span>
                     </div>
                 </div>
@@ -358,7 +358,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1.5">تاريخ الحجز</label>
-                        <input type="date" id="clientDate" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-pink-500 transition-colors">
+                        <input type="date" id="date" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-pink-500 transition-colors">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1.5">الوقت المناسب</label>
@@ -650,20 +650,20 @@
 
         async function submitBooking(event) {
             event.preventDefault();
-            const name = document.getElementById('clientName').value;
-            const phone = document.getElementById('clientPhone').value;
-            const date = document.getElementById('clientDate').value;
-            const time = document.getElementById('clientTime').value;
-            const bookingDetails = getBookingData();
+            const time = document.getElementById('clientTime')?.value || '';
             const salon = salonsData[currentSalonIndex];
 
+            const bookingData = {
+                name: document.getElementById('name')?.value || '',
+                phone: document.getElementById('phone')?.value || '',
+                barber: document.getElementById('barber')?.value || '',
+                service: Array.from(document.querySelectorAll('input[name="service"]:checked, input[type="checkbox"]:checked')).map(cb => cb.value).join(' + '),
+                date: (document.getElementById('date')?.value || '') + (time ? ` (${time})` : ''),
+                totalPrice: (document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0') + ' ر.س'
+            };
+
             const payload = {
-                name: name,
-                phone: phone,
-                date: `${date} ${time}`,
-                service: bookingDetails.service,
-                barber: bookingDetails.barber,
-                totalPrice: bookingDetails.totalPrice,
+                ...bookingData,
                 salonBranch: salon.name
             };
 
@@ -678,7 +678,7 @@
                     throw new Error('فشل استجابة السيرفر');
                 }
 
-                alert(`شكراً لك أ/ ${name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingDetails.barber}\nالخدمات: ${bookingDetails.service}\nالإجمالي: ${bookingDetails.totalPrice}\nالموعد: ${date} الساعة ${time}`);
+                alert(`شكراً لك أ/ ${bookingData.name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingData.barber}\nالخدمات: ${bookingData.service}\nالإجمالي: ${bookingData.totalPrice}\nالموعد: ${bookingData.date}`);
                 
                 closeBookingModal();
                 selectedServices = [];
