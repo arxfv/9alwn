@@ -648,7 +648,7 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        const WEBHOOK_URL = 'https://895cce7192dc1f.lhr.life/webhook/salon-booking'; // https://salon-lumiere1.netlify.app/
+        const WEBHOOK_URL = 'https://895cce7192dc1f.lhr.life/webhook/salon-booking';
 
         async function submitBooking(event) {  
             if (event) event.preventDefault();
@@ -657,7 +657,7 @@
             const originalText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
             const time = document.getElementById('clientTime')?.value || '';
 
-            // جمع البيانات
+            // جمع كافة بيانات الحجز من حقول النموذج
             const payload = {
                 name: document.getElementById('name')?.value || '',
                 phone: document.getElementById('phone')?.value || '',
@@ -691,7 +691,7 @@
                 clearTimeout(timeoutId);
 
                 if (response.ok) {
-                    alert('تم استلام حجزك بنجاح! سنتواصل معك للتأكيد.');
+                    alert('تم تأكيد حجزك بنجاح وسنتواصل معك قريباً');
                     document.querySelector('form')?.reset();
                     if (typeof closeBookingModal === 'function') closeBookingModal();
                     const totalDisplay = document.getElementById('total-price');
@@ -701,7 +701,7 @@
                 }
             } catch (err) {
                 console.error('Booking Error:', err);
-                alert('حدث ضغط على النظام أثناء إرسال الحجز، يمكنك التواصل معنا مباشرة لتأكيد موعدك.');
+                alert('حدث ضغط على النظام أثناء إرسال الحجز، يرجى التواصل عبر الواتساب لتأكيد الموعد.');
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
