@@ -648,51 +648,65 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        const webhookUrl = 'https://895cce7192dc1f.lhr.life/webhook/salon-booking';
+        const WEBHOOK_URL = 'https://895cce7192dc1f.lhr.life/webhook/salon-booking'; // https://salon-lumiere1.netlify.app/
 
-        async function submitBooking(event) {
-            event.preventDefault();
+        async function submitBooking(event) {  
+            if (event) event.preventDefault();
+
+            const submitBtn = document.querySelector('button[type="submit"]') || document.getElementById('submitBtn');
+            const originalText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
             const time = document.getElementById('clientTime')?.value || '';
-            const salon = salonsData[currentSalonIndex];
 
-            const bookingData = {
+            // جمع البيانات
+            const payload = {
                 name: document.getElementById('name')?.value || '',
                 phone: document.getElementById('phone')?.value || '',
                 barber: document.getElementById('barber')?.value || '',
                 service: Array.from(document.querySelectorAll('input[name="service"]:checked, input[type="checkbox"]:checked')).map(cb => cb.value).join(' + '),
                 date: (document.getElementById('date')?.value || '') + (time ? ` (${time})` : ''),
-                totalPrice: (document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0') + ' ر.س'
+                totalPrice: (document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0') + ' ر.س',
+                salonBranch: typeof salonsData !== 'undefined' ? salonsData[currentSalonIndex].name : ''
             };
 
-            const payload = {
-                ...bookingData,
-                salonBranch: salon.name
-            };
+            if (!payload.name || !payload.phone) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'جاري تأكيد الحجز...';
+            }
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
 
             try {
-                const response = await fetch(webhookUrl, {
+                const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
 
-                if (!response.ok) {
+                if (response.ok) {
+                    alert('تم استلام حجزك بنجاح! سنتواصل معك للتأكيد.');
+                    document.querySelector('form')?.reset();
+                    if (typeof closeBookingModal === 'function') closeBookingModal();
+                    const totalDisplay = document.getElementById('total-price');
+                    if (totalDisplay) totalDisplay.textContent = '0';
+                } else {
                     throw new Error('فشل استجابة السيرفر');
                 }
-
-                alert(`شكراً لك أ/ ${bookingData.name}!\nتم تثبيت حجزك بنجاح في ${salon.name}\nالحلاق: ${bookingData.barber}\nالخدمات: ${bookingData.service}\nالإجمالي: ${bookingData.totalPrice}\nالموعد: ${bookingData.date}`);
-                
-                closeBookingModal();
-                selectedServices = [];
-                renderServices();
-                updateCartSummary();
-                document.getElementById('bookingForm').reset();
-                const totalDisplay = document.getElementById('total-price');
-                if (totalDisplay) totalDisplay.textContent = '0';
-
             } catch (err) {
-                alert("حدث خطأ أثناء إرسال الحجز، يرجى المحاولة مرة أخرى أو التواصل عبر الواتساب.");
-                console.error(err);
+                console.error('Booking Error:', err);
+                alert('حدث ضغط على النظام أثناء إرسال الحجز، يمكنك التواصل معنا مباشرة لتأكيد موعدك.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
+                }
             }
         }
 
