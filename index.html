@@ -653,7 +653,7 @@
 
         // 2. كود الإرسال المباشر
         document.addEventListener('DOMContentLoaded', function() {
-          const form = document.querySelector('form');
+          const form = document.getElementById('bookingForm');
           if (!form) return;
 
           form.addEventListener('submit', async function(e) {
