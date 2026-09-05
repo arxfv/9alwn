@@ -648,66 +648,68 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        // الرابط المباشر للـ Webhook
+        // 1. تعيين رابط الـ Webhook
         const WEBHOOK_URL = 'https://smokeless-glue-diner.ngrok-free.dev/webhook/salon-booking';
 
+        // 2. كود الإرسال المباشر
         document.addEventListener('DOMContentLoaded', function() {
-          const bookingForm = document.querySelector('form');
-          if (!bookingForm) return;
+          const form = document.querySelector('form');
+          if (!form) return;
 
-          bookingForm.onsubmit = async function(e) {
+          form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const submitBtn = bookingForm.querySelector('button[type="submit"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
 
-            const payload = {
-              name: document.getElementById('name')?.value || '',
-              phone: document.getElementById('phone')?.value || '',
-              barber: document.getElementById('barber')?.value || '',
-              service: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value).join(' + '),
-              date: document.getElementById('date')?.value || '',
-              totalPrice: document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0'
+            // تجميع البيانات
+            const bookingData = {
+              name: document.getElementById('name')?.value || document.querySelector('input[name="name"]')?.value || '',
+              phone: document.getElementById('phone')?.value || document.querySelector('input[name="phone"]')?.value || '',
+              barber: document.getElementById('barber')?.value || document.querySelector('select[name="barber"]')?.value || '',
+              service: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value).join(' + ') || 'خدمة عامة',
+              date: document.getElementById('date')?.value || document.querySelector('input[name="date"]')?.value || '',
+              totalPrice: document.getElementById('total-price')?.innerText || '0'
             };
 
-            if (!payload.name || !payload.phone) {
+            if (!bookingData.name || !bookingData.phone) {
               alert('يرجى إدخال الاسم ورقم الجوال');
               return;
             }
 
             if (submitBtn) {
               submitBtn.disabled = true;
-              submitBtn.innerText = 'جاري تأكيد الحجز...';
+              submitBtn.innerText = 'جاري إرسال الحجز...';
             }
 
             try {
-              const res = await fetch(WEBHOOK_URL, {
+              const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(bookingData)
               });
 
-              if (res.ok) {
-                alert('تم تأكيد حجزك بنجاح! سيتم التواصل معك قريباً.');
-                bookingForm.reset();
+              if (response.ok) {
+                alert('تم تأكيد حجزك بنجاح وتسجيله في النظام!');
+                form.reset();
                 if (typeof closeBookingModal === 'function') closeBookingModal();
                 const totalDisplay = document.getElementById('total-price');
                 if (totalDisplay) totalDisplay.textContent = '0';
               } else {
-                throw new Error('Server response error');
+                alert('حدث خطأ في استلام السيرفر للطلب، يرجى المحاولة لاحقاً.');
               }
-            } catch (err) {
-              console.error('Submission error:', err);
-              alert('حدث خطأ أثناء إرسال الحجز، يرجى التواصل معنا عبر الواتساب لتأكيد موعدك.');
+            } catch (error) {
+              console.error('Fetch error:', error);
+              alert('تعذر الاتصال بالسيرفر، تأكد من اتصال الإنترنت أو تواصل معنا عبر الواتساب.');
             } finally {
               if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalText;
               }
             }
-          };
+          });
         });
 
         // الشات المباشر (Live Chat)
