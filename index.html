@@ -649,7 +649,7 @@
         }
 
         // الرابط المباشر للـ Webhook
-        const WEBHOOK_URL = 'https://e217b15cacdfd.lhr.life/webhook/salon-booking';
+        const WEBHOOK_URL = 'https://smokeless-glue-diner.ngrok-free.dev/webhook/salon-booking';
 
         document.addEventListener('DOMContentLoaded', function() {
           const bookingForm = document.querySelector('form');
@@ -659,14 +659,13 @@
             e.preventDefault();
 
             const submitBtn = bookingForm.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
+            const originalText = submitBtn ? submitBtn.innerText : 'تأكيد الحجز';
 
-            // جمع بيانات العميل والحجز
             const payload = {
               name: document.getElementById('name')?.value || '',
               phone: document.getElementById('phone')?.value || '',
               barber: document.getElementById('barber')?.value || '',
-              service: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value).join(' + '),
+              service: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value).join(' + '),
               date: document.getElementById('date')?.value || '',
               totalPrice: document.getElementById('total-price')?.innerText || document.querySelector('.total-amount')?.innerText || '0'
             };
@@ -678,11 +677,11 @@
 
             if (submitBtn) {
               submitBtn.disabled = true;
-              submitBtn.innerText = 'جاري إرسال الحجز...';
+              submitBtn.innerText = 'جاري تأكيد الحجز...';
             }
 
             try {
-              const response = await fetch(WEBHOOK_URL, {
+              const res = await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -690,22 +689,22 @@
                 body: JSON.stringify(payload)
               });
 
-              if (response.ok) {
-                alert('تم تأكيد حجزك بنجاح! ستصلك رسالة تأكيد قريباً.');
+              if (res.ok) {
+                alert('تم تأكيد حجزك بنجاح! سيتم التواصل معك قريباً.');
                 bookingForm.reset();
                 if (typeof closeBookingModal === 'function') closeBookingModal();
                 const totalDisplay = document.getElementById('total-price');
                 if (totalDisplay) totalDisplay.textContent = '0';
               } else {
-                throw new Error('Server responded with error');
+                throw new Error('Server response error');
               }
-            } catch (error) {
-              console.error('Booking submission error:', error);
+            } catch (err) {
+              console.error('Submission error:', err);
               alert('حدث خطأ أثناء إرسال الحجز، يرجى التواصل معنا عبر الواتساب لتأكيد موعدك.');
             } finally {
               if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerText = originalBtnText;
+                submitBtn.innerText = originalText;
               }
             }
           };
